@@ -29,9 +29,7 @@ public class RoomController {
     public boolean write_save(RoomDto roomDto){
                             // 요청 변수중 dto필드와 변수명이 동일할 경우 자동 주입
         roomService.room_save(roomDto);
-        System.out.println("입력값 : " + roomDto.toString());
-        //ㅁㄴㅇㅁㄴㅇㅁㅇㄴ
-    return  true;
+    return true;
     }
 
     // 3. 방 목록 페이지 이동
@@ -60,18 +58,27 @@ public class RoomController {
 
 
 /*
-*   get : find, get
-*   post : save
-*   put : update
-*   delete : delete
-*
-*
-*
-*   mapping 사용시 dto 로 자동 주입 된다
-*       // 조건 1 : mapping
-*       // 조건 2 :
-*
-* */
+    -----------  @RequestMapping( "경로" ) --------------------------
+    @GetMapping          : FIND , GET   [ @RequestMapping( "경로" , method=RequestMethod.GET )  ]
+    @PostMapping         :  SAVE            [ @RequestMapping( "경로" , method=RequestMethod.POST ) ]
+    @PutMapping          : UPDATE         [ @RequestMapping( "경로" , method=RequestMethod.PUT ) ]
+    @ DeleteMapping       : DELETE      [ @RequestMapping( "경로" , method=RequestMethod.DELETE ) ]
+ */
+
+/*
+    view -----> controller  변수 요청 방식
+        // 1.  HttpServletRequest request 이용한 방식
+            String roomname = request.getParameter("roomname");
+            String x = request.getParameter("x");
+            String y = request.getParameter("y");
+        // 2.  @RequestParam("요청변수) 자료형 변수명
+            @RequestParam("roomname") String roomname ,
+            @RequestParam("x") String x ,
+            @RequestParam("y") String y
+        // 3. Mapping 사용시  DTO 로 자동 주입 된다
+            // 조건1. : Mapping
+            // 조건2 : 요청변수명 과 DTO 필드명 동일하다
+ */
 
 
 

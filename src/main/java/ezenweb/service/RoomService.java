@@ -21,10 +21,10 @@ public class RoomService {
     public boolean room_save(RoomDto roomDto){
         // dto -> entity
         RoomEntity roomEntity = RoomEntity.builder()
-        .roomname(roomDto.getRoomname())
+                .roomname(roomDto.getRoomname())
                 .x(roomDto.getX())
                 .y(roomDto.getY())
-        .build();
+                .build();
         roomRepository.save(roomEntity);
         return true;
     }
