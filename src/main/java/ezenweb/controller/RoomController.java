@@ -30,7 +30,7 @@ public class RoomController {
                             // 요청 변수중 dto필드와 변수명이 동일할 경우 자동 주입
         roomService.room_save(roomDto);
         System.out.println("입력값 : " + roomDto.toString());
-
+        //ㅁㄴㅇㅁㄴㅇㅁㅇㄴ
     return  true;
     }
 
