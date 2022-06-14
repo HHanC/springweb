@@ -30,6 +30,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok' // 룸북 라이브러리[작성 라이브러리]
  //   testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.json', name: 'json', version: '20220320' // json라이브러리
+ //   implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8' // Dto -> entity -> Dto
 }
 
 tasks.named('test') {

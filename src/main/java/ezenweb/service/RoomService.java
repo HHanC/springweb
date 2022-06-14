@@ -1,7 +1,9 @@
 package ezenweb.service;
 
-import ezenweb.domain.RoomEntity;
-import ezenweb.domain.RoomRepository;
+import ezenweb.domain.room.RoomEntity;
+import ezenweb.domain.room.RoomRepository;
+import ezenweb.domain.room.RoomimgEntity;
+import ezenweb.domain.room.RoomimgRepository;
 import ezenweb.dto.RoomDto;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,29 +19,19 @@ public class RoomService {
 
     @Autowired
     private RoomRepository roomRepository;
-
+    @Autowired
+    private RoomimgRepository roomimgRepository;
     // 1. 룸 저장
     public boolean room_save(RoomDto roomDto) {
-        // dto -> entitiy
-        RoomEntity roomEntity = RoomEntity.builder()
-                .roomname(roomDto.getRname())
-                .x(roomDto.getX())
-                .y(roomDto.getY())
-                .transactionmethod(roomDto.getTransactionmethod())
-                .price(roomDto.getPrice())
-                .area(roomDto.getArea())
-                .administrativeexpenses(roomDto.getAdministrativeexpenses())
-                .rescue(roomDto.getRescue())
-                .completiondate(roomDto.getCompletiondate())
-                .parking(roomDto.getParking())
-                .elevator(roomDto.getElevator())
-                .movein(roomDto.getMovein())
-                .currentfloor(roomDto.getCurrentfloor())
-                .building(roomDto.getBuilding())
-                .buildingtype(roomDto.getBuildingtype())
-                .address(roomDto.getAddress())
-                .detaileddescription(roomDto.getDetaileddescription())
-                .build();
+        // 1. dto -> entity [dto는 DB 에 저장 할 수 없으니까!]
+        RoomEntity roomEntity = roomDto.toentity();
+        // 자동으로 DTO -> entoty 변환 라이브러리
+/*        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(roomDto, RoomEntity.class);*/
+
+        // 2.저장 [우전석으로 DB에 저장한다.]
+        roomRepository.save(roomEntity);
+        // 3. 입력받은 첨부파일을 저장한다.
         String uuidfile = null;
 
         // 첨부파일
@@ -64,16 +56,23 @@ public class RoomService {
                 try{
                 // 3. 첨부파일 읽기모드 처리
                 file.transferTo(new File(filepath));
-                // 4. 엔티티에 파일명 저장
-                roomEntity.setRimg(uuidfile);
+
+                // 1. 룸 이미지 엔티티 생성
+                    RoomimgEntity roomimgEntity = RoomimgEntity.builder()
+                            .rimg(uuidfile)
+                            .roomEntity(roomEntity)
+                            .build();
+                    // 2. 룸 엔티티 세이브
+                    roomimgRepository.save(roomimgEntity);
+                    // 3. 이미지엔티티를 룸엔티티에 추가
+                    roomEntity.getRoomimgEntityList().add(roomimgEntity);
+                    System.out.println(roomEntity.getRoomimgEntityList().get(0));
                 // 파일명.transferTo(새로운 경로)
                 }catch(Exception e){System.out.println("파일저장 실패 : " + e);}
             }
 
         }
 
-        // 저장
-        roomRepository.save(roomEntity);
         return true;
     }
 
@@ -129,18 +128,19 @@ public class RoomService {
         for( RoomEntity entity : roomEntityList  ){ // 리스트에서 엔티티 하나씩 꺼내오기
 
             // [ 조건 ]   Location 범위내 좌표만 저장 하기
-            if(  Double.parseDouble(  entity.getY() ) > qa
-                    && Double.parseDouble(  entity.getY() ) < pa
-                    && Double.parseDouble(  entity.getX() )   > ha
-                    && Double.parseDouble(  entity.getX() )   < oa
+            if(  Double.parseDouble(  entity.getRlat() ) > qa
+                    && Double.parseDouble(  entity.getRlat() ) < pa
+                    && Double.parseDouble(  entity.getRlon() )   > ha
+                    && Double.parseDouble(  entity.getRlon() )   < oa
             ) {
                 // 3. map 객체 생성
                 Map<String, String> map = new HashMap<>();
-                map.put("rname", entity.getRoomname());
-                map.put("lng", entity.getX());
-                map.put("lat", entity.getY());
                 map.put("rno", entity.getRno()+"");
-                map.put("transactionmethod", entity.getTransactionmethod());
+                map.put("rtitle", entity.getRtitle());
+                map.put("rlon", entity.getRlon());
+                map.put("rlat", entity.getRlat());
+                map.put("rimg", entity.getRoomimgEntityList().get(0).getRimg());
+/*                map.put("transactionmethod", entity.getTransactionmethod());
                 map.put("price", entity.getPrice());
                 map.put("area", entity.getArea());
                 map.put("administrativeexpenses", entity.getAdministrativeexpenses());
@@ -153,7 +153,7 @@ public class RoomService {
                 map.put("building", entity.getBuilding());
                 map.put("buildingtype", entity.getBuildingtype());
                 map.put("address", entity.getAddress());
-                map.put("detaileddescription", entity.getDetaileddescription());
+                map.put("detaileddescription", entity.getDetaileddescription());*/
                 // 4. 리스트 넣기
                 Maplist.add(map);
             }
@@ -164,4 +164,45 @@ public class RoomService {
         return  object;
 
     }
+
+    public JSONObject getroom(int rno){
+        // 1. 해당 룸 번호의 룸 엔티티 찾기
+        Optional<RoomEntity> optionalRoomEntity = roomRepository.findById(rno);
+        // 2. 해당 엔티티 -> json객체 변환
+        RoomEntity roomEntity = optionalRoomEntity.get();
+            // 1. json에 엔티티 필드 값 넣기
+        JSONObject object = new JSONObject();
+        object.put("rtitle", roomEntity.getRtitle() );
+        JSONArray jsonArray = new JSONArray();
+            // 2. 룸 엔티티의 저장된 룸 이미지를 반복문을 이용한 룸 이미지를  jsonarray에 저장
+        for(RoomimgEntity roomimgEntity : roomEntity.getRoomimgEntityList()) { // 이미지 여러개여서 반복문 돌림
+
+            jsonArray.put(roomimgEntity.getRimg());
+
+        }
+        // 3. jsonarray를 json 객체 포함
+        object.put("rimglist", jsonArray);
+        System.out.println(object);
+        return object;
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

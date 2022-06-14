@@ -30,7 +30,6 @@ public class RoomController {
     @ResponseBody // 템플릿이 아닌 객체 반환시 사용되는 어노테이션
     public boolean write_save(RoomDto roomDto){
                             // 요청 변수중 dto필드와 변수명이 동일할 경우 자동 주입
-       System.out.println(roomDto.getRimg().get(0));
         roomService.room_save(roomDto);
     return true;
     }
@@ -65,6 +64,17 @@ public class RoomController {
 
     }
 
+    @GetMapping("/getroom")
+    public JSONObject getroom(@RequestParam("rno")int rno,
+                        HttpServletResponse response){
+        try{
+            JSONObject object = roomService.getroom(rno);
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json");
+            response.getWriter().print(object);
+        }catch (Exception e){}
+        return  null;
+    }
 }
 
 

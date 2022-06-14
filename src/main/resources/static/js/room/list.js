@@ -76,25 +76,29 @@
 
                             // 마커 하나 생성  start
                             var marker =  new kakao.maps.Marker({
-                                position : new kakao.maps.LatLng( position.lat, position.lng) ,
+                                position : new kakao.maps.LatLng( position.rlat, position.rlon) ,
                                 image : markerImage // 마커의 이미지
                             });
 
                                  // 마커에 클릭 이벤트를 등록한다 (우클릭 : rightclick)
                                     kakao.maps.event.addListener(marker, 'click', function() {
-                                        alert(" 룸 이름 : " + position.rname );
+
+                                    getroom(position.rno);
+
+                                        // 모달 띄우기
+                                        $("#modalbtn").click();
                                     });
 
                                     // 사이드바에 추가할 html 구성
                                     html +=
-                                    '<div class="row">'+
+                                    '<div class="row" onclick="getroom('+position.rno+')">'+
                                        '<div class="col-md-6">'+
                                            ' <img src="/upload/'+position.rimg+'" width="100%">'+
                                         '</div>'+
                                         '<div class="col-md-6">'+
                                             '<div> 방번호 : <span>'+position.rno+'</span> </div>'+
-                                            '<div> 방이름 : <span>'+position.rname+'</span> </div>'+
-                                            '<div> 거래방식 : <span>'+position.transactionmethod+'</span> </div>'+
+                                            '<div> 방이름 : <span>'+position.rtitle+'</span> </div>'+
+/*                                            '<div> 거래방식 : <span>'+position.transactionmethod+'</span> </div>'+
                                             '<div> 가격 : <span>'+position.price+'</span> </div>'+
                                             '<div> 면적 : <span>'+position.area+'</span> </div>'+
                                             '<div> 관리비 : <span>'+position.administrativeexpenses+'</span> </div>'+
@@ -107,7 +111,7 @@
                                             '<div> 건물전체층 : <span>'+position.building+'</span> </div>'+
                                             '<div> 건물종류 : <span>'+position.buildingtype+'</span> </div>'+
                                             '<div> 주소 : <span>'+position.address+'</span> </div>'+
-                                            '<div> 상세설명 : <span>'+position.detaileddescription+'</span> </div>'+
+                                            '<div> 상세설명 : <span>'+position.detaileddescription+'</span> </div>'+*/
                                         '</div>'+
                                     '</div>';
 
@@ -138,3 +142,45 @@
     });
 
 }); // 현재 내 위치의 위도경도 구하기 end
+
+function roomlist(){
+
+
+
+}
+
+
+//모달의 방 정보 출력
+function getroom(rno){
+      // 해당 모달에 데이터 넣기
+       $.ajax({
+            url : "/room/getroom",
+            method : "GET",
+            data : {"rno" : rno} ,
+            success : function(room){
+            let imgtag = "";
+                console.log("Room");
+                console.log(room.rimglist);
+                for(let i=0; i<room.rimglist.length; i++){
+                    if(i==0){ // 첫번째 이미지만 active 속성 추가
+                        imgtag +=
+                            '<div class="carousel-item active">'+
+                                '<img onclick="" src="/upload/'+room.rimglist[i]+'" class="d-block w-100" alt="...">'+
+                            '</div>';
+                    }else{
+                        imgtag +=
+                            '<div class="carousel-item">'+
+                                '<img onclick="" src="/upload/'+room.rimglist[i]+'" class="d-block w-100" alt="...">'+
+                            '</div>';
+                    }
+                }
+                $("#modalimglist").html(imgtag)
+            }
+        })
+
+}
+
+
+
+
+
