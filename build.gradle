@@ -20,10 +20,12 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // jpa 라이브 러리
-    runtimeOnly 'com.h2database:h2' // h2 라이브러리 [h2 : 관계형 데이터 베이스 = 인 메모리]
+//    runtimeOnly 'com.h2database:h2' // h2 라이브러리 [h2 : 관계형 데이터 베이스 = 인 메모리]
+    runtimeOnly 'mysql:mysql-connector-java'
+
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
- //   runtimeOnly 'mysql:mysql-connector-java'
+
     compileOnly 'org.projectlombok:lombok' // 룸북 라이브러리[실행 라이브러리]
     annotationProcessor 'org.projectlombok:lombok' // 룸북 라이브러리[작성 라이브러리]
  //   testImplementation 'org.springframework.boot:spring-boot-starter-test'
