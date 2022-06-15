@@ -15,31 +15,31 @@
   <h3>room 등록</h3>
     <form id="saveform">
         <!-- dto로 자동주입 할 경우에는 input name과 dto 필드명 동일하게  -->
-        이름 : <input type="text" name="rtitle">
-        사진 : <input type="file" multiple="multiple" name="rimg">
+        이름 : <input type="text" name="rtitle"><br>
+        사진 : <input type="file" multiple="multiple" name="rimg"><br>
         x(경도) : <input type="input" name="rlon" id="x">
         y(위도) : <input type="input" name="rlat" id="y">
         지역 :
         <input type="text" id="sample5_address" placeholder="주소">
-        <input type="button" onclick="sample5_execDaumPostcode()" value="주소 검색"><br>
+        <input type="button" onclick="sample5_execDaumPostcode()" value="주소 검색"> <br>
         <div id="map" style="width:300px;height:300px;margin-top:10px;display:none"></div>
-       <!-- 거래방식 : <input type="text" name="transactionmethod">
-        가격 : <input type="text" name="price">
-        면적 : <input type="text" name="area">
-        관리비 : <input type="text" name="administrativeexpenses">
-        구조 : <input type="text" name="rescue">
-        준공날짜 : <input type="text" name="completiondate">
-        주차여부 : <input type="text" name="parking">
-        엘리베이터 : <input type="text" name="elevator">
-        입주가능일 : <input type="text" name="movein">
-        현재층 : <input type="text" name="currentfloor">
-        건물전체층 : <input type="text" name="building">
-        건물종류 : <input type="text" name="buildingtype">
-        주소 : <input type="text" name="address">
-        상세설명 : <input type="text" name="detaileddescription"> -->
+<!--        거래방식 : <input type="text" name="rtrans"><br>
+        가격 : <input type="text" name="rprice"><br>
+        면적 : <input type="text" name="rarea"><br>
+        관리비 : <input type="text" name="rmanagementfee"><br>
+        구조 : <input type="text" name="rstructure"><br>
+        준공날짜 : <input type="text" name="rcompletiondate"><br>
+        입주가능일 : <input type="text" name="rindate"><br>
+        건물종류 : <input type="text" name="rkind"><br>
+        주소 : <input type="text" name="raddress"><br>
+        거래상태 : <input type="text" name="ractive"><br>
+        현재층 : <input type="text" name="rfloor"><br>
+        건물전체층 : <input type="text" name="rmaxfloor"><br>
+        엘리베이터 : <input type="text" name="relevator"><br>
+        주차여부 : <input type="text" name="rparking"><br>
+        상세설명 : <input type="text" name="rcontents"><br>-->
         <button type="button" onclick="save()">등록</button>
     </form>
-
   <script src="/js/room/write.js"></script>
 </body>
 </html>

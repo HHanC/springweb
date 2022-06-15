@@ -1,7 +1,6 @@
 
     // 1. 저장 메소드
     function save(){
-
         // 1. form 가져오기
         let form = $("#saveform")[0];
         let formdata = new FormData(form);

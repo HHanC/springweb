@@ -26,6 +26,9 @@ public class RoomController {
 
         return "room/write";
     }
+
+
+
     @PostMapping("/write") // 2. 등록 처리
     @ResponseBody // 템플릿이 아닌 객체 반환시 사용되는 어노테이션
     public boolean write_save(RoomDto roomDto){
@@ -74,6 +77,21 @@ public class RoomController {
             response.getWriter().print(object);
         }catch (Exception e){}
         return  null;
+    }
+
+    @GetMapping("/myroomlist")
+    public void myrooomlist(HttpServletResponse response){
+        try {
+            response.setContentType("applicacion/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().print(roomService.myrooomlist());
+        }catch(Exception e){System.out.println(e);}
+    }
+
+    @DeleteMapping("/delete")
+    @ResponseBody
+    public boolean delete(@RequestParam("rno") int rno){
+        return roomService.delete(rno);
     }
 }
 

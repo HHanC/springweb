@@ -93,7 +93,7 @@
                                     html +=
                                     '<div class="row" onclick="getroom('+position.rno+')">'+
                                        '<div class="col-md-6">'+
-                                           ' <img src="/upload/'+position.rimg+'" width="100%">'+
+                                           ' <img onclick="getroom('+position.rno+')" data-bs-toggle="modal" data-bs-target="#exampleModal" src="/upload/'+position.rimg+'" width="100%">'+
                                         '</div>'+
                                         '<div class="col-md-6">'+
                                             '<div> 방번호 : <span>'+position.rno+'</span> </div>'+

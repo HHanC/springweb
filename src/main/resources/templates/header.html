@@ -10,8 +10,15 @@
 </head>
 <body>
     <a href="/">메인</a> <!-- href = "URL : Controller 클래스내 @GetMapping("URL")" -->
-    <a href="/room/write">등록</a>
+    <a th:if="${session.login != null}" href="/room/write">등록</a>
     <a href="/room/list">지도보기</a>
+
+    <span th:if="${session.login != null}" th:text="${session.login}"></span>
+    <a th:if="${session.login != null}" href="/member/logout">로그아웃</a>
+    <a th:if="${session.login != null}" href="/member/info">회원정보</a>
+
+    <a th:if="${session.login == null}" href="/member/signup">회원가입</a>
+    <a th:if="${session.login == null}" href="/member/login">로그인</a>
     <h3>헤더</h3>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
@@ -31,6 +38,12 @@
     th : 타임리프 문법
         1. th : fragment = "이름 정의"
         2. th : replace = "파일명.html :: frament 이름"
-
+        4. 세션 호출 방식
+            ${session.세션이름}
+        3. 조건식
+        th:if = 조건식
+        th:else =
+        5. 데이터 호출
+        th:text = "${데이터}"
 
   -->
