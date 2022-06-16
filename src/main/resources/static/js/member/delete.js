@@ -4,7 +4,6 @@ function member_delete(){
         method : "DELETE",
         data : {"mpassword" : $("#mpassword").val()},
         success : function(re){
-
             if(re == true){
                 alert("회원탈퇴 성공");
                 location.href ="/member/logout";
