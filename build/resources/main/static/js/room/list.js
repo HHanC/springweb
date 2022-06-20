@@ -1,13 +1,15 @@
 // 마커 클러스터 지도 사용
 
-/*    // 0. 현재 내 위치의 위도 경도 구하기
-    navigator.geolocation.getCurrentPosition(function(position) {
-            var lat = position.coords.latitude, // 위도
-                 lng = position.coords.longitude; // 경도*/
+//    // 0. 현재 내 위치의 위도 경도 구하기
+//    navigator.geolocation.getCurrentPosition(function(position) {
+//            var lat = position.coords.latitude, // 위도
+//                 lng = position.coords.longitude; // 경도
+//                 console.log( lat , lng );
+//    }); // 현재 내 위치의 위도경도 구하기 end
 
     // 1. Map 변수
     var map = new kakao.maps.Map(document.getElementById('map'), { // 지도를 표시할 div
-        center : new kakao.maps.LatLng( lat , lng ), // 지도의 중심좌표 // 현재 접속된 디바이스 좌표
+        center : new kakao.maps.LatLng( 37.3141978  , 126.857308 ), // 지도의 중심좌표 // 현재 접속된 디바이스 좌표
         level : 5 // 지도의 확대 레벨
     });
 
@@ -40,7 +42,7 @@
 
     // 6. 마커 이미지 변경
                 // 마커 이미지의 주소
-                var markerImageUrl = 'http://192.168.17.91:8081/img/집.png',
+                var markerImageUrl = '192.168.17.91:8081/img/집.png',
                     markerImageSize = new kakao.maps.Size(40, 40), // 마커 이미지의 크기
                     markerImageOptions = {
                         offset : new kakao.maps.Point(20, 42)// 마커 좌표에 일치시킬 이미지 안의 좌표
@@ -63,13 +65,9 @@
                 contentType : 'application/json' ,
                 success : function( data ){
                         console.log(data); // 통신 확인
-                        console.log(data.positions); //
-                        // 만약에 데이터가 없으면 메시지를 사이드바에 띄우기
-                        if(data.positions.length == 0){
-                            html +=
-                                 '<div> <img src="/img/엑스.png"; width="100%";> 방 없음 </div>';
-                        }
 
+                        // *** 만약에 data 없으면 메시지를 사이드바에 띄우기
+                        if( data.positions.length == 0  ){ html +="<div>검색된 방이 없습니다.</div>"  }
 
                         // 마커목록 생성
                           var markers = $(data.positions).map(function(i, position) {
@@ -81,39 +79,23 @@
                             });
 
                                  // 마커에 클릭 이벤트를 등록한다 (우클릭 : rightclick)
-                                    kakao.maps.event.addListener(marker, 'click', function() {
+                                kakao.maps.event.addListener(marker, 'click', function() {
 
-                                    getroom(position.rno);
+                                        getroom( position.rno);
 
-                                        // 모달 띄우기
-                                        $("#modalbtn").click();
-                                    });
+                                });
 
-                                    // 사이드바에 추가할 html 구성
-                                    html +=
-                                    '<div class="row" onclick="getroom('+position.rno+')">'+
-                                       '<div class="col-md-6">'+
-                                           ' <img onclick="getroom('+position.rno+')" data-bs-toggle="modal" data-bs-target="#exampleModal" src="/upload/'+position.rimg+'" width="100%">'+
-                                        '</div>'+
-                                        '<div class="col-md-6">'+
-                                            '<div> 방번호 : <span>'+position.rno+'</span> </div>'+
-                                            '<div> 방이름 : <span>'+position.rtitle+'</span> </div>'+
-/*                                            '<div> 거래방식 : <span>'+position.transactionmethod+'</span> </div>'+
-                                            '<div> 가격 : <span>'+position.price+'</span> </div>'+
-                                            '<div> 면적 : <span>'+position.area+'</span> </div>'+
-                                            '<div> 관리비 : <span>'+position.administrativeexpenses+'</span> </div>'+
-                                            '<div> 구조 : <span>'+position.rescue+'</span> </div>'+
-                                            '<div> 준공날짜 : <span>'+position.completiondate+'</span> </div>'+
-                                            '<div> 주차여부 : <span>'+position.parking+'</span> </div>'+
-                                            '<div> 엘리베이터여부 : <span>'+position.elevator+'</span> </div>'+
-                                            '<div> 입주가능일 : <span>'+position.movein+'</span> </div>'+
-                                            '<div> 현재층 : <span>'+position.currentfloor+'</span> </div>'+
-                                            '<div> 건물전체층 : <span>'+position.building+'</span> </div>'+
-                                            '<div> 건물종류 : <span>'+position.buildingtype+'</span> </div>'+
-                                            '<div> 주소 : <span>'+position.address+'</span> </div>'+
-                                            '<div> 상세설명 : <span>'+position.detaileddescription+'</span> </div>'+*/
-                                        '</div>'+
-                                    '</div>';
+                                // 사이드바에 추가할 html 구성
+                                html +=
+                                            '<div class="row" onclick="getroom('+position.rno+')">'+
+                                                '<div class="col-md-6">'+
+                                                    '<img src="/upload/'+position.rimg+'" width="100%">'+
+                                                '</div>'+
+                                                '<div class="col-md-6">'+
+                                                    '<div> 집번호 : <span> '+position.rno+' </span>  </div>'+
+                                                    '<div> 집이름 : <span> '+position.rtitle+' </span>  </div>'+
+                                                '</div>'+
+                                            '</div>';
 
                                return marker;
 
@@ -123,8 +105,9 @@
 
                          // 클러스터에 마커 추가
                         clusterer.addMarkers(markers);
-                        // 해당 html을 해당 id값에 추가
-                        $("#sidebar").html(html);
+                        //  변수 html를 해당 id 값에 추가
+                        $("#sidebar").html( html );
+
                 } // sueess end
             }); // ajax end
     }); // 이벤트 end
@@ -141,46 +124,36 @@
         map.setLevel(level, {anchor: cluster.getCenter()});
     });
 
-}); // 현재 내 위치의 위도경도 구하기 end
-
-function roomlist(){
 
 
 
+// 모달에 특정 방 정보 출력 메소드
+function getroom( rno ) {
+              // 해당 모달에 데이터 넣기
+                    $.ajax({
+                        url : "/room/getroom" ,
+                        method : "GET",
+                        data : { "rno" : rno } ,
+                        success: function( room ){
+                            let imgtag = "";
+                            // 응답받은 데이터를 모달에 데이터 넣기
+                            console.log( room.rimglist );
+                            for( let i = 0 ; i<room.rimglist.length ; i++ ){
+                                 if( i == 0 ){  // 첫번째 이미지만 active 속성 추가
+                                    imgtag +=
+                                                 '<div class="carousel-item active">'+
+                                                     '<img src="/upload/'+room.rimglist[i]+'" class="d-block w-100" alt="...">'+
+                                                '</div>';
+                                 }else{
+                                    imgtag +=
+                                             '<div class="carousel-item">'+
+                                                 '<img src="/upload/'+room.rimglist[i]+'" class="d-block w-100" alt="...">'+
+                                            '</div>';
+                                 }
+                            }
+                            $("#modalimglist").html( imgtag );
+                            // 모달 띄우기
+                            $("#modalbtn").click();
+                        }
+                    });
 }
-
-
-//모달의 방 정보 출력
-function getroom(rno){
-      // 해당 모달에 데이터 넣기
-       $.ajax({
-            url : "/room/getroom",
-            method : "GET",
-            data : {"rno" : rno} ,
-            success : function(room){
-            let imgtag = "";
-                console.log("Room");
-                console.log(room.rimglist);
-                for(let i=0; i<room.rimglist.length; i++){
-                    if(i==0){ // 첫번째 이미지만 active 속성 추가
-                        imgtag +=
-                            '<div class="carousel-item active">'+
-                                '<img onclick="" src="/upload/'+room.rimglist[i]+'" class="d-block w-100" alt="...">'+
-                            '</div>';
-                    }else{
-                        imgtag +=
-                            '<div class="carousel-item">'+
-                                '<img onclick="" src="/upload/'+room.rimglist[i]+'" class="d-block w-100" alt="...">'+
-                            '</div>';
-                    }
-                }
-                $("#modalimglist").html(imgtag)
-            }
-        })
-
-}
-
-
-
-
-
