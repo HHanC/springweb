@@ -1,9 +1,9 @@
 // 마커 클러스터 지도 사용
 
-    // 0. 현재 내 위치의 위도 경도 구하기
+/*    // 0. 현재 내 위치의 위도 경도 구하기
     navigator.geolocation.getCurrentPosition(function(position) {
             var lat = position.coords.latitude, // 위도
-                 lng = position.coords.longitude; // 경도
+                 lng = position.coords.longitude; // 경도*/
 
     // 1. Map 변수
     var map = new kakao.maps.Map(document.getElementById('map'), { // 지도를 표시할 div
@@ -40,7 +40,7 @@
 
     // 6. 마커 이미지 변경
                 // 마커 이미지의 주소
-                var markerImageUrl = 'http://localhost:8081/img/집.png',
+                var markerImageUrl = 'http://192.168.17.91:8081/img/집.png',
                     markerImageSize = new kakao.maps.Size(40, 40), // 마커 이미지의 크기
                     markerImageOptions = {
                         offset : new kakao.maps.Point(20, 42)// 마커 좌표에 일치시킬 이미지 안의 좌표

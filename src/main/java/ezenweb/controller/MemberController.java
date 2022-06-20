@@ -14,7 +14,7 @@ public class MemberController {
     // 1. 로그인 페이지 이동 매핑
     @GetMapping("/login")
     public String login(){
-        return "/member/login";
+        return "member/login";
     }
 
     // 2.  로그인 처리 매핑
@@ -36,7 +36,7 @@ public class MemberController {
     // 5. 회원수정 페이지 이동 매핑
     @GetMapping("/update")
     public String update(){
-        return "/member/update";
+        return "member/update";
     }
 
     // 6. 회원수정 처리 매핑
@@ -51,7 +51,7 @@ public class MemberController {
     @GetMapping("/info")
     public String info(){
 
-        return "/member/info";
+        return "member/info";
 
     }
 
@@ -59,7 +59,7 @@ public class MemberController {
     @GetMapping("/myroom")
     public String myroom(){
 
-        return "/member/myroom";
+        return "member/myroom";
 
     }
 
@@ -67,14 +67,14 @@ public class MemberController {
     // 3. 회원가입 페이지 열기 이동 맾칭
     @GetMapping("/signup")
     public String signup(){
-        return "/member/write";
+        return "member/write";
     }
     // member서비스
     @Autowired
     MemberService memberService;
 
     @GetMapping("/delete")
-    public String delete(){return "/member/delete";}
+    public String delete(){return "member/delete";}
 
     @DeleteMapping("/delete")
     @ResponseBody

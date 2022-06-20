@@ -73,7 +73,13 @@ public class RoomService {
 
                 // 2. 경로 설정
                 // \ : 제어문자
-                String dir = "C:\\Users\\504\\Desktop\\springweb\\src\\main\\resources\\static\\upload\\"; // 저장 경로
+                    // 1. 윈도우 운영체제 프로젝트 경로
+                /*String dir = "C:\\Users\\504\\Desktop\\springweb\\src\\main\\resources\\static\\upload\\"; // 저장 경로*/
+                    // 2. 리눅스 운영체제 프로젝트 빌드[서버] 경로
+                String dir = "/home/ec2-user/app/springtest/build/resources/main/static/upload/";
+                        // 리눅스 최상위 경로 : /home
+                        // 리눅스 계정 폴더 경로 : "/home/ec2-user"
+                        // "/home/ec2-user/{폴더명}/{git저장소명}/build/reources/main/static/upload/";
                 String filepath = dir + uuidfile;
                 // .getOriginalFilename() : 실제 첨부파일 이름
 
