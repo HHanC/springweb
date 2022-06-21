@@ -11,7 +11,12 @@ function board_save(){
         processData : false ,
         contentType : false ,
         success : function(re){
-            alert(re);
+            if(re == true){
+                alert("게시물 작성 성공");
+                location.href = "/board/list";
+            }else{
+                alert("작성 권한이 없습니다.[작성실패]");
+            }
         }
     })
 }

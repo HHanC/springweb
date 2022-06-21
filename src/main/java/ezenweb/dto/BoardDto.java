@@ -7,11 +7,13 @@ import lombok.*;
 @AllArgsConstructor @NoArgsConstructor
 public class BoardDto {
 
-    private int bno;
-    private String btitle;
-    private String bcontent;
-    private int bview;
-    private int blike;
+    private int bno; // 번호
+    private String btitle; // 제목
+    private String bcontent; // 내용
+    private int bview; // 조회수
+    private int blike; // 좋아요 수
+
+    private String category; // 카테고리
 
     // DTO -> ENTITY
     public BoardEntity toentity(){

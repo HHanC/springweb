@@ -1,9 +1,12 @@
 package ezenweb.domain.board;
 
 import ezenweb.domain.BaseTime;
+import ezenweb.domain.member.MemberEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter @ToString @Builder
 @AllArgsConstructor
@@ -18,9 +21,17 @@ public class BoardEntity extends BaseTime {
     private String bcontent;
     private int bview;
     private int blike;
+
     // 작성자 [연관관계]
-    // 첨부파일 [연관관계]
+    @ManyToOne
+    @JoinColumn(name = "mno")
+    private MemberEntity memberEntity;
     // 카테고리 [연관관계]
+    @ManyToOne
+    @JoinColumn(name = "cno")
+    private CategoryEntity categoryEntity;
+    // 첨부파일 [연관관계]
+
     // 댓글 [연관관계]
 
 
