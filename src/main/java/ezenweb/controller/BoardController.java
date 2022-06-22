@@ -70,11 +70,16 @@ public class BoardController {
     }
     // 2. R : 모든 게시물 출력 메소드
     @GetMapping("/getboardlist")
-    public void getboardlist(HttpServletResponse response , @RequestParam("cno") int cno){
+    public void getboardlist(
+            HttpServletResponse response ,
+            @RequestParam("cno") int cno ,
+            @RequestParam("key") String key ,
+            @RequestParam("keyword") String keyword ,
+            @RequestParam("page") int page){
         try{
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json");
-            response.getWriter().print(boardService.getboardlist(cno));
+            response.getWriter().print(boardService.getboardlist(cno , key , keyword, page));
         }catch(Exception e){System.out.println(e);}
     }
     // 2. R2 개별 조회 메소드

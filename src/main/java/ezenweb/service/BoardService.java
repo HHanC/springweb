@@ -12,6 +12,10 @@ import ezenweb.dto.MemberDto;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,23 +98,93 @@ public class BoardService {
         return false;
     }
     // 2. R[인수 : x 바환 : 1.json 2. map]
-    public JSONArray getboardlist(int cno){
+    public JSONObject getboardlist(int cno, String key , String keyword , int page){
         JSONArray jsonArray = new JSONArray();
-        List<BoardEntity> boardEntitys = boardRepository.findAll();
-        // 모든 엔티티 -> JSON 변환
-        for(BoardEntity entity : boardEntitys){
-            if(entity.getCategoryEntity().getCno() == cno) {
-                JSONObject object = new JSONObject();
-                object.put("bno", entity.getBno());
-                object.put("btitle", entity.getBtitle());
-                object.put("bindate", entity.getCreatedate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd:mm:ss")));
-                object.put("bview", entity.getBview());
-                object.put("blike", entity.getBlike());
-                object.put("mid", entity.getMemberEntity().getMid());
-                jsonArray.put(object);
+
+        JSONObject object = new JSONObject();
+
+        Page<BoardEntity> boardEntitys = null; // 선언만
+
+        // Pageable : 페이지처리 관련 인터페이스
+        // PageRequest : 페이징처리 관련 클래스
+                // PageRequest.of(page,size) : 페이징처리 설정
+                    // page = "현재 페이지" [0부터 시작]
+                    // size = "현재페이지 보여줄 게시물 수"
+                    // sort = "정렬기준" [ Sort.by(Sort.Direction.DESC)) , "정렬필드명" ]
+                        // sort문제점 : 정렬 필드명에 _ 인식 불가능! --> sql처리
+        Pageable pageable = PageRequest.of(page , 5 , Sort.by(Sort.Direction.DESC , "bno")); // sql : limit와 동일한 기능처리
+
+        // 필드에 따른 검색 기능
+        if(key.equals("btitle")){
+            boardEntitys = boardRepository.findBybtitle(cno , keyword, pageable);
+        }else if(key.equals("bcontent")){
+            boardEntitys = boardRepository.findBybcontent(cno , keyword, pageable);
+        }else if(key.equals("mid")){
+            // 입력받은 mid -> [mno]엔티티 변환
+                // 만약에 없는 아이디를 검색했으면
+            Optional<MemberEntity> optionalMember = memberRepository.findBymid(keyword);
+            if(optionalMember.isPresent()){ // .isPresent() : Optional 이 null 아니면
+                MemberEntity memberEntity = optionalMember.get(); // 엔티티 추출
+                boardEntitys = boardRepository.findBymno(cno , memberEntity, pageable); // 찾은 회원 엔티티를 -> 인수로 전달
+            }else{ // null 이면
+//                return ; // 결과가 없으면
             }
+        }else{ // 검색이 없으면
+            boardEntitys = boardRepository.findBybtitle(cno, keyword , pageable);
         }
-        return jsonArray;
+
+        // 페이지에 표시할 총 페이징 버튼 개수
+        int btncount = 5;
+        // 시작번호 버튼의 번호 [현재 페이지 / 표시할 버튼 수] * btncount + 1
+        int startbtn = (page / btncount) * btncount + 1;
+        /*
+3/5 -> 0 *5 +1->1
+
+   7/5 -> 1 * 5 -> 5+1 ->  6
+
+         */
+
+        // 끝 번호 번튼의 번호 [시작 버튼 + 표시할 버튼수 -1]
+        int endbtn = startbtn + btncount -1;
+    /*
+    1+5-1->5
+
+    6+5-1->10
+
+     */
+
+
+            // 만약에 끝 번호가 마지막 페이지보다 크면 끝 번호는 마지막 페이지 번호로 사용
+            if(endbtn > boardEntitys.getTotalPages()) endbtn = boardEntitys.getTotalPages();
+
+        // 엔티티 반환타입을 리스트가 아닌 페이지 인터페이스 할 경우에
+//        System.out.println("검색된 총 게시물 수 : " + boardEntitys.getTotalElements());
+//        System.out.println("검색된 총 페이지 수 : " + boardEntitys.getTotalPages());
+//        System.out.println("검색된 게시물 정보 : " + boardEntitys.getContent());
+//        System.out.println("현재 페이지 수 : " + boardEntitys.getNumber());
+//        System.out.println("현재 페이지 게시물수 : " + boardEntitys.getNumberOfElements());
+//        System.out.println("현재 페이지 첫 페이지 여부확인 : " + boardEntitys.isFirst());
+//        System.out.println("현재 페이지 마지막 페이지 여부확인 : " + boardEntitys.isLast());
+
+        // data :  모든 엔티티 -> JSON 변환
+        for(BoardEntity entity : boardEntitys){
+                JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("bno", entity.getBno());
+                    jsonObject.put("btitle", entity.getBtitle());
+                    jsonObject.put("bindate", entity.getCreatedate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd:mm:ss")));
+                    jsonObject.put("bview", entity.getBview());
+                    jsonObject.put("blike", entity.getBlike());
+                    jsonObject.put("mid", entity.getMemberEntity().getMid());
+                jsonArray.put(jsonObject);
+        }
+
+        //js 보낼 jsonobject
+        object.put("startbtn" , startbtn ); // 페이징 시작 버튼
+        object.put("endbtn" , endbtn); // 페이징 끝 버튼
+        object.put("totalpages" , boardEntitys.getTotalPages()); // 전체 페이지수
+        object.put("data" , jsonArray); // 리스트를 추가
+
+        return object;
     }
     @Transactional
     // 2 R : 개별조회[게시물 번호]

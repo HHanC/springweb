@@ -8,7 +8,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @ToString @Builder
+@Getter @Setter @ToString(exclude = {"memberEntity","categoryEntity"} ) // 객체 주소값 대신 데이터로 출력해주는 메소드
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "board") @Entity
