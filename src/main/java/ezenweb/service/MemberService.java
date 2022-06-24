@@ -5,16 +5,54 @@ import ezenweb.domain.member.MemberRepository;
 import ezenweb.dto.LoginDto;
 import ezenweb.dto.MemberDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-public class MemberService {
+public class MemberService implements UserDetailsService {
+                            // UserDetailsService 인터페이스[추상 메소드 존재!]
 
-    // 로직 // 트랜잭션
+
+    // * 로그인 서비스 제공 메소드
+    // 1. 패스워드 검증 x [시큐리티 제공]
+    // 2. 아이디만 검증 처리
+    // 3. 권한 키 검증 처리
+    @Override
+    public UserDetails loadUserByUsername(String mid) throws UsernameNotFoundException {
+
+        System.out.println("로그인 아이디 : " +  mid);
+
+        // 1. 회원 아이디로 엔티티 찾기
+        Optional<MemberEntity> entityOptional = memberRepository.findBymid(mid);
+        MemberEntity memberEntity = entityOptional.orElse(null);
+                                    // Optional 클래스 [null관련 오류 방지]
+                                    // 1. optional.isPresent() : null 아니면
+                                    // 2. optional.orElse  :만약에 optional객체가 비어있으면 반환할 데이터
+                                    // 만약에 엔티티가 없으면 null 반환
+        // 2. 찾은 회원 엔티티의 권한 [키]를 리스트에 담기
+        List<GrantedAuthority> authorityList = new ArrayList<>();
+                // GrantedAuthority : 부여된 인증의 클래스
+                // List<GrantedAuthority> : 부여된 인증들을 모아두기
+        System.out.println("권한키 : " + memberEntity.getrolekey());
+
+        authorityList.add(new SimpleGrantedAuthority(memberEntity.getrolekey()));
+            // 리스트에 인증된 엔티티의 키를 보관
+        // 세션 부여?? -> UserDetails -> 인증되면 세션 부여
+
+        return new LoginDto(memberEntity , authorityList); // 회원엔티티, 인증된 리스트를 인증세션 부여
+    }
+
+    // 서비스구역 : 1. 로직 // 2. 트랜잭션
 
     @Autowired // 자동 빈(메모리) 생성
     private MemberRepository memberRepository;
@@ -34,7 +72,7 @@ public class MemberService {
     @Autowired
     HttpServletRequest request; // 세션 사용을 위한 request 객체 선언
 
-    // 1. 로그인 처리 메소드
+/*    // 1. 로그인 처리 메소드 [시쿠리티 사용하기 전]
     public boolean login(String mid, String mpassword){
 
 
@@ -60,12 +98,12 @@ public class MemberService {
             }
         }
         return false; // 5. 로그인 실패
-    }
+    }*/
 
     // 3. 로그아웃 메소드
-    public void logout(){
+/*    public void logout(){
         request.getSession().setAttribute("login" , null); // 해당 세션을 null 대입
-    }
+    }*/
 
 
     // 2. 회원가입 처리 메소드

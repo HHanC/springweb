@@ -25,12 +25,18 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     compileOnly 'org.projectlombok:lombok' // 룸북 라이브러리[실행 라이브러리]
     annotationProcessor 'org.projectlombok:lombok' // 룸북 라이브러리[작성 라이브러리]
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.json', name: 'json', version: '20220320' // json라이브러리
  //   implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8' // Dto -> entity -> Dto
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // 타임리프에서 인증객체 사용
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5' // 타임리프에서 인증객체 사용
+
+    testImplementation 'org.springframework.security:spring-security-test' // 스프링 시큐리티 [보안 관련 클래스 / 메소드 제공]
 }
 
 tasks.named('test') {

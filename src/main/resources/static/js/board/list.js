@@ -28,6 +28,7 @@ function board_list( cno, page, key , keyword ){
         method : "get" ,
         success : function(boardlist){
 
+
         console.log(boardlist);
 
         let html =  '<tr> <th width="10%">번호</th><th width="50%">제목</th><th width="10%">작성일</th><th width="10%">조회수</th><th width="10%">좋아요수</th><th width="10%">작성자</th> </tr>';

@@ -17,22 +17,22 @@ public class MemberController {
         return "member/login";
     }
 
-    // 2.  로그인 처리 매핑
+/*    // 2.  로그인 처리 매핑 [시큐리티 사용하기 전]
     @PostMapping("/login")
     @ResponseBody
     public boolean login(@RequestParam("mid") String mid ,
                          @RequestParam("mpassword") String mpassword){
         System.out.println("id : " + mpassword);
         return memberService.login(mid, mpassword);
-    }
+    }*/
 
     // 4. 로그아웃 처리 매핑
-    @GetMapping("/logout")
+/*    @GetMapping("/logout")
     public String logout(){
         memberService.logout();
         // return "main"; // 타임리프 반환
         return "redirect:/"; // url 이동
-    }
+    }*/
     // 5. 회원수정 페이지 이동 매핑
     @GetMapping("/update")
     public String update(){

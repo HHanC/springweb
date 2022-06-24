@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Controller
-// @RestController 객체 반환
+@Controller// @RestController 객체 반환
 @RequestMapping("/board")
 public class BoardController {
 
@@ -105,9 +104,7 @@ public class BoardController {
     // 4. D : 삭제 메소드
     @DeleteMapping("/delete")
     @ResponseBody
-    public boolean delete(@RequestParam("bno") int bno){
-        return boardService.delete(bno);
-    }
+    public boolean delete(@RequestParam("bno") int bno){return boardService.delete(bno);}
 
     // 5. 카테고리 출력 메소드
     @GetMapping("/getcategorylist")
