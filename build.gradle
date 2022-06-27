@@ -37,6 +37,9 @@ dependencies {
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5' // 타임리프에서 인증객체 사용
 
     testImplementation 'org.springframework.security:spring-security-test' // 스프링 시큐리티 [보안 관련 클래스 / 메소드 제공]
+
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // Oauth2 [소셜 로그인 기능]
+
 }
 
 tasks.named('test') {

@@ -8,10 +8,13 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Integer> {
 
     // 1. 아이디를 이용한 엔티티 검색
     Optional<MemberEntity> findBymid(String mid); // select sql문법 없이 검색 메소드 생성
-
+    // 2. 이메일을 이용한 엔티티 검색
+    Optional<MemberEntity> findBymemail(String memail);
 
 
 }
+
+// 특정 필드 검색 메소드 만들기 : findBy필드명
 
 // JpaRepository [CRUD]
     // 1. findAll() : 모든 엔티티 호출
