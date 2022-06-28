@@ -17,6 +17,19 @@ public class MemberController {
         return "member/login";
     }
 
+    @GetMapping("/email/{authkey}/{mid}")
+    public String signupemail(@PathVariable("authkey") String authkey , @PathVariable("mid") String mid){
+        // @PathVariable : 경로상(url) 변수 요청
+        System.out.println("검증번호 : " + authkey);
+        // 이메일 검증 처리
+        boolean result = memberService.authsuccess(authkey, mid);
+        if(result){
+            return "memmber/authsuccess";
+        }else{
+            return  "";
+        }
+    }
+
 /*    // 2.  로그인 처리 매핑 [시큐리티 사용하기 전]
     @PostMapping("/login")
     @ResponseBody
@@ -86,8 +99,8 @@ public class MemberController {
     @PostMapping("/signup")
     @ResponseBody
     public boolean save(MemberDto memberDto){
-
         boolean result = memberService.signup(memberDto);
+        System.out.println("이메일!!!! : " + memberDto.getMemail());
         return result;
     }
 }

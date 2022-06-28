@@ -6,6 +6,7 @@ import ezenweb.dto.LoginDto;
 import ezenweb.dto.MemberDto;
 import ezenweb.dto.OauthDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,12 +20,12 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import org.springframework.mail.javamail.JavaMailSender; // 자바 메일 전송 인터페이스
+
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class MemberService implements UserDetailsService , OAuth2UserService<OAuth2UserRequest , OAuth2User> {
@@ -160,19 +161,85 @@ public class MemberService implements UserDetailsService , OAuth2UserService<OAu
         request.getSession().setAttribute("login" , null); // 해당 세션을 null 대입
     }*/
 
+    @Autowired
+    private JavaMailSender javaMailSender; // 자바 메일 전송 인터페이스
+
+    // 메일전송 메소드
+    public void mailsend(String toemail , String title , StringBuilder content ){ // 인수 : 받는사람 이메일 , 제목 , 내용
+        // SMTP : 간이 메일 전송 프로토콜 [텍스트 외 불가능]
+        try {
+            // 이메일 전송
+            MimeMessage message = javaMailSender.createMimeMessage(); // Mime 프로토콜 : 메시지안에 텍스트외 내용을담는 프로토콜[SMTP와 같이 많이 사용됨]
+            // 0. Mime 설정
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true, "utf-8"); // 예외처리 발생
+            // 1. 보내는 사람
+            mimeMessageHelper.setFrom("junseok2217@naver.com", "Ezen 부동산");
+            // 2. 받는 사람
+            mimeMessageHelper.setTo(toemail);
+            // 3. 메일 제목
+            mimeMessageHelper.setSubject(title);
+            // 4. 메일 내용
+            mimeMessageHelper.setText(content.toString() , true);
+            // 5. 메일 전송
+            javaMailSender.send(message);
+        }catch(Exception e){
+            System.out.println("메일전송 실패 : " +  e);
+        }
+    }
+
 
     // 2. 회원가입 처리 메소드
+    @Transactional
     public boolean signup(MemberDto memberDto){
 
         MemberEntity memberEntity = memberDto.toentity();
 
         memberRepository.save(memberEntity);
 
-        if(memberEntity.getMno() < 1){
-            return false;
+        if(memberEntity.getMno() < 1) {
+            return false; // 회원가입 실패
         }else{
-            return true;
+
+            // 이메일에 들어가는 내용 [html]
+            StringBuilder html = new StringBuilder(); // StringBuilder : 문자열 연결 클래스[append 연결메소드 vs + : 연결연산자]
+            html.append("<html><body><h1>EZEN부동상 회원 이메일 검증</h1>");
+
+            // 인증 코드[문자 난수] 만들기
+            Random random = new Random(); // 랜텀 객체
+                StringBuilder authkey = new StringBuilder();
+            for(int i = 0; i < 12; i++){ // 12자리 문자 난수 생성
+                char randomchar = (char)(random.nextInt(26)+97); // 97~122 // 소문자 a -> z중 하나 난수 발생
+                System.out.println("문자난수 : " + randomchar);
+                authkey.append(randomchar); // 생성된 문자 난수들을 하나씩 연결 -> 문자열 만들기
+            }
+            System.out.println("인증코드 : " + authkey);
+            // 인증 코드 전달
+            html.append("<a href='http://localhost:8081/member/email/"+authkey+"/"+memberDto.getMid()+"'>이메일검증</a>");
+
+            html.append("</body></html>");
+
+            memberEntity.setOauth(authkey.toString());
+
+            // 회원가입 인증 메일 보내기
+            mailsend(memberDto.getMemail() , "회원가입 메일인증" , html);
+
+            return true; // 회원가입 성공
         }
+    }
+
+    @Transactional
+    public boolean authsuccess(String authkey, String mid){
+        System.out.println("검증번호 : " + authkey + "회원아이디 : " + mid);
+        // DB업데이트
+        Optional<MemberEntity> optional = memberRepository.findBymid(mid);
+        if(optional.isPresent()){ // optional 이 null 아니면 [회원찾기 성공]
+            MemberEntity memberEntity = optional.get(); // 해당 엔티티 가져오기
+            if(authkey.equals(memberEntity.getOauth())) { // 엔티티의 인증키와 엔티티의 인증키 와 동일하면
+                memberEntity.setOauth("Local");
+                return true; // 성공
+            }
+        }
+        return false; // 실패
     }
 
     // 회원수정 메소드
