@@ -7,20 +7,19 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Getter @Setter @ToString @Builder
+@Entity // 테이블과 매핑
+@Getter @Setter @ToString
 @AllArgsConstructor @NoArgsConstructor
-@Table(name = "category")
+@Builder
+@Table(name="category")
 public class CategoryEntity extends BaseTime {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue( strategy = GenerationType.IDENTITY )
     private int cno;
     private String cname;
     // board 연관관계
     @Builder.Default
     @OneToMany(mappedBy = "categoryEntity" , cascade = CascadeType.ALL)
     private List<BoardEntity> boardEntityList = new ArrayList<>();
-
-
-
 }
